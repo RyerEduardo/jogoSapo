@@ -1,0 +1,59 @@
+import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
+
+/**
+ * Write a description of class Normal here.
+ * 
+ * @author (your name) 
+ * @version (a version number or a date)
+ */
+public class Normal extends Actor
+{
+    public static final int TAXA_DE_ATUALIZACAO = 25;
+    public static final int PULO = 450;
+    private int cicloAtual = 0;
+    
+    public void act() 
+    {
+       movimento();
+       Actor doce;
+       doce = getOneIntersectingObject(Doce.class); // pra saber se tem a imagem junta
+       
+       if((cicloAtual % TAXA_DE_ATUALIZACAO) == 0){ //diminui a velocidade de troca 
+           setImage(new GreenfootImage("normal.png")); //de troca de imagem do sapo
+        }
+       
+       if(doce != null){
+           World terreno;
+           terreno = getWorld();
+           setImage(new GreenfootImage("bocaAberta.png"));
+           terreno.removeObject(doce);
+       }
+        
+    }    
+    
+    //retornar o valor do limite inferior do personagem
+    public int alturaPes(){
+        return getY() + getImage().getHeight()/2;
+    }
+    
+    //retorna a altura atual do personagem dentro do jogo
+    public int alturaAtual(){
+        return (alturaPes() - Mundo1.SOLO) * -1;
+    }
+    
+    private void movimento(){
+        if(Greenfoot.isKeyDown("left")){
+            setLocation(getX() - 6, getY());
+        }
+        if(Greenfoot.isKeyDown("right")){
+            setLocation(getX() + 6, getY());
+        }
+        if(Greenfoot.isKeyDown("space")){
+            setLocation(getX()+ 0 , getY() - 6);
+        }
+        if(Greenfoot.isKeyDown("up")){
+            setLocation(getX(), getY() + 6);
+        }
+        cicloAtual++; // aumento o ciclo do sapo
+    }
+}

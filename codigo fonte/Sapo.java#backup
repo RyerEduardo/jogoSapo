@@ -1,0 +1,141 @@
+import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
+
+/**
+ * Write a description of class Sapo here.
+ * 
+ * @author (your name) 
+ * @version (a version number or a date)
+ */
+public class Sapo extends Actor
+{
+    public static final int TAXA_DE_ATUALIZACAO = 15;
+    public static final int PULO = 400;
+    
+    public static final int MAX_PULO = 15;
+    
+    public boolean terraFirme = true;
+    public boolean estaPulando = false;
+    private int alturaAtualDoPulo = 0;
+    
+    private int cicloAtual = 0; //ciclo do act
+    public boolean morto = false; //sapo morto
+    private int placar = 0; //placar do jogo
+    
+    
+   
+       
+    public void act() 
+    {
+      
+    
+        getWorld().showText(("Placar: " + placar),100,30);//exibiçao do placar inicial
+        
+       if((cicloAtual % TAXA_DE_ATUALIZACAO) == 0){ //diminui a velocidade de troca 
+           setImage(new GreenfootImage("normal.png")); //de troca de imagem do sapo
+        }
+       
+       Actor mosca = getOneIntersectingObject(Mosca.class); // pra saber se relou na mosca
+       
+       if(mosca != null){// pra saber se relou na mosca
+           World terreno;
+           terreno = getWorld();
+           setImage(new GreenfootImage("bocaAberta.png"));
+           placar++;
+           getWorld().showText(("Placar: " + placar),100,30);//exibiçao do placar 
+           terreno.removeObject(mosca);//tira a mosca do jogo
+           
+           if(placar % 2 != 0){ //sempre que o total de moscas for impar outra sera criada
+             Sapolandia.maisMosca(); 
+            }
+       }
+       
+       
+       Actor abelha = getOneIntersectingObject(Abelha.class);
+       
+         if(abelha != null){// pra saber se relou na abelha
+           World terreno;
+           terreno = getWorld();
+           setImage(new GreenfootImage("triste.png"));
+        
+       }
+       
+       
+       if(Greenfoot.isKeyDown("left")){
+           setLocation(getX() - 4, getY());//movimentaçao no eixo x para esquerda
+        }
+        
+       if(Greenfoot.isKeyDown("right")){
+           setLocation(getX() + 4, getY());//movimentaçao no eixo x para direita
+       }
+       
+       if(Greenfoot.isKeyDown("space") && terraFirme){
+           terraFirme = false;
+           estaPulando = true;
+       }
+       abelhaPicou();
+       subidaPulo();
+       apicePulo();
+       decidaPulo();
+       pousaPulo();
+       cicloAtual++; // aumento o ciclo do sapo
+    }
+   
+    
+    //retornar o valor do limite inferior do personagem
+    public int alturaPes(){
+        return getY() + getImage().getHeight()/2;
+    }
+    
+    //retorna a altura atual do personagem dentro do jogo
+    public int alturaAtual(){
+        return (alturaPes() - Sapolandia.SOLO) * -1; //-1 pra voltar valor positivo
+    }
+    
+    //gravidade da subida do pulo
+    public void subidaPulo(){
+        if(alturaAtualDoPulo < MAX_PULO && estaPulando){
+            alturaAtualDoPulo++;
+            setLocation(getX(), getY() - Sapolandia.FORCA_GRAVIDADE * 2);
+        }
+    }
+    
+    //gravidade da decida do pulo com mudanca de estatus boolean
+    public void apicePulo(){
+        if(alturaAtualDoPulo == MAX_PULO && estaPulando){
+            alturaAtualDoPulo--;
+            estaPulando = false;
+        }
+    }
+    
+     //gravidade da decida do pulo com mudanca de estatus boolean
+    public void decidaPulo(){
+        if(alturaAtualDoPulo > 0 && !estaPulando){
+            alturaAtualDoPulo--;
+        }
+    }
+    
+     //gravidade da decida do pulo com mudanca de estatus boolean
+    public void pousaPulo(){
+        if(alturaAtualDoPulo == 0 && !estaPulando){
+            terraFirme = true;
+        }
+    }
+    
+   
+    
+    //morre ao comer abelha e exibi os resultados
+    public void abelhaPicou(){
+       
+        if (isTouching(Abelha.class)){
+            if(placar > 100){
+                getWorld().showText(("Fim de jogo!\n\nPARABENS PEQUENO ANFIBIO\n novo recorde: " + placar + "\n\n\nRECORDES:\nEduardo...100\nEdinaldo...99"),300,300);
+            }
+            else{
+            getWorld().showText(("Você Perdeu!\n\n\nRECORDES:\nEduardo...100\nEdinaldo...99\n\nVoce...." + placar),300,300);
+         }
+        }
+    }
+    
+}
+  
+
